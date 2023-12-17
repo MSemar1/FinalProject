@@ -1,15 +1,21 @@
 """
-Michael Semar
-12/5/2023
-PC Playground
-This application will also check for compatibility while the user builds their computer.
+Author: Michael Semar
+Date: 12/5/2023
+Description: PC Playground - This application checks for compatibility while the user builds their computer.
 """
+
 import tkinter as tk
 from tkinter import ttk
 from components_database import components_database, component_specs
 
 class PCPlayground:
     def __init__(self, root):
+        """
+        Initializes the PCPlayground class.
+
+        Parameters:
+        - root (tk.Tk): The root Tkinter window.
+        """
         self.root = root
         self.root.title("PC Playground")
 
@@ -37,7 +43,19 @@ class PCPlayground:
         check_button = ttk.Button(root, text="Check Compatibility", command=self.check_compatibility)
         check_button.pack(pady=10)
 
+        # Exit button
+        exit_button = ttk.Button(root, text="Exit", command=self.exit_application)
+        exit_button.pack(pady=10)
+
     def create_dropdown(self, label, options, variable):
+        """
+        Creates a dropdown menu with a label and specified options.
+
+        Parameters:
+        - label (str): The label for the dropdown.
+        - options (list): The options for the dropdown menu.
+        - variable (tk.StringVar): The variable to store the selected option.
+        """
         frame = ttk.Frame(self.root)
         frame.pack(pady=10)
         ttk.Label(frame, text=label).pack(side="left")
@@ -45,6 +63,10 @@ class PCPlayground:
         dropdown.pack(side="left")
 
     def check_compatibility(self):
+        """
+        Checks compatibility based on the selected components and their specifications.
+        Displays the compatibility result in a label.
+        """
         # Get selected components
         cpu = self.selected_cpu.get()
         gpu = self.selected_gpu.get()
@@ -55,30 +77,49 @@ class PCPlayground:
         powersupply = self.selected_powersupply.get()
         motherboard = self.selected_motherboard.get()
 
-        # Check compatibility based on component specifications
-        if cpu and gpu and ram and storage and cpucooler and case and powersupply and motherboard:
-            cpu_specs = component_specs.get(cpu, {})
-            gpu_specs = component_specs.get(gpu, {})
-            motherboard_specs = component_specs.get(motherboard, {})
-            powersupply_specs = component_specs.get(powersupply, {})  # Added line
+        # Check input validation
+        if not all((cpu, gpu, ram, storage, cpucooler, case, powersupply, motherboard)):
+            self.display_error("Please select all components.")
+            return
 
-            # Check CPU and motherboard socket compatibility
-            cpu_socket = cpu_specs.get("socket")
-            motherboard_socket = motherboard_specs.get("socket")
-            if cpu_socket and motherboard_socket and cpu_socket != motherboard_socket:
-                compatibility_result = "Compatibility Check: Not Compatible - Motherboard and CPU socket mismatch"
-            else:
-                # Check power supply wattage
-                total_wattage = cpu_specs.get("wattage", 0) + gpu_specs.get("wattage", 0)
-                if total_wattage > powersupply_specs.get("wattage", 0):  # Updated line
-                    compatibility_result = "Compatibility Check: Not Compatible - Insufficient Power Supply"
-                else:
-                    compatibility_result = "Compatibility Check: Compatible"
+        # Check compatibility based on component specifications
+        cpu_specs = component_specs.get(cpu, {})
+        gpu_specs = component_specs.get(gpu, {})
+        motherboard_specs = component_specs.get(motherboard, {})
+        powersupply_specs = component_specs.get(powersupply, {})
+
+        # Check CPU and motherboard socket compatibility
+        cpu_socket = cpu_specs.get("socket")
+        motherboard_socket = motherboard_specs.get("socket")
+        if cpu_socket and motherboard_socket and cpu_socket != motherboard_socket:
+            compatibility_result = "Compatibility Check: Not Compatible - Motherboard and CPU socket mismatch"
         else:
-            compatibility_result = "Compatibility Check: Not Compatible - Incomplete component selection"
+            # Check power supply wattage
+            total_wattage = cpu_specs.get("wattage", 0) + gpu_specs.get("wattage", 0)
+            if total_wattage > powersupply_specs.get("wattage", 0):
+                compatibility_result = "Compatibility Check: Not Compatible - Insufficient Power Supply"
+            else:
+                compatibility_result = "Compatibility Check: Compatible"
 
         result_label = ttk.Label(self.root, text=compatibility_result)
         result_label.pack(pady=10)
+
+    def exit_application(self):
+        """Callback function to exit the application."""
+        self.root.destroy()
+
+    def display_error(self, message):
+        """
+        Displays an error message in a pop-up window.
+
+        Parameters:
+        - message (str): The error message to be displayed.
+        """
+        error_popup = tk.Toplevel(self.root)
+        error_popup.title("Error")
+        ttk.Label(error_popup, text=message).pack(padx=10, pady=10)
+        ok_button = ttk.Button(error_popup, text="OK", command=error_popup.destroy)
+        ok_button.pack(pady=10)
 
 if __name__ == "__main__":
     root = tk.Tk()

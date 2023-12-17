@@ -5,12 +5,11 @@
 
 ## Overview
 
-PC Playground is an application that provides prices from several vendors to allow users to browse the best deals for computer components. Additionally, the application checks for compatibility while the user builds their computer.
+PC Playground is an application that checks for compatibility while the user builds their computer.
 
 ## Features
 
 - Check compatibility of computer components.
-- Browse prices from various vendors.
 
 ## Getting Started
 

@@ -2,7 +2,6 @@
 Michael Semar
 12/5/2023
 PC Playground
-This application will provide prices from several vendors to allow the user to browse the best deals.
 This application will also check for compatibility while the user builds their computer.
 """
 import tkinter as tk
